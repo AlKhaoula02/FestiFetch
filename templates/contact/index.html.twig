@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ContactController!{% endblock %}
+
+{% block body %}
+
+
+<div class="example-wrapper">
+    <h1>Hello </h1>
+
+   <form method="POST" id="contact-form" class="">
+    <div id="form-inner">
+        <div id="form-title">
+            <h2 id="form-h2" class="">
+                <span class="">
+                    Contact me
+                </span>
+            </h2>
+        </div>
+        <div id="forminputs">
+            <div id="inptypetext">
+                <input type="text" class="" required placeholder="Name" name="name">
+                <input type="email" class="" required placeholder="Email" name="email">
+		<input type="text" class="" required placeholder="Subject" name="subject">
+            </div>
+            <div id="message">
+                <textarea name="message" required placeholder="Message" id="mymessage" class="b"></textarea>
+            </div>
+            <div id="submit">
+                <input type="submit" value="Send" name="submit" class="">
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+{% endblock %}
