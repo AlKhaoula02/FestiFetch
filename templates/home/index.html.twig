@@ -4,33 +4,61 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     <div id="loader">
+        <p>Bienvenue sur Festifetch</p>
         <img src="loader.gif" alt="loader">
         <p>Chargement en cours</p>
     </div>
-	<div class="titre">
+    <div id="fleche">
+        <img src="fleche.png" alt="fleche"
+        />
+      </div>
+	<div id="titre">
+        <div class="container">
+            <img src="logo.png" alt="logo">
+               <h1>estifetch</h1>
+                <h2>Tous les festivals en France</h2>
+        </div>
+     
     </div>
-    <div class="container">
+    <div class="container between">
         <div class="carte">
             <div id="map"></div>
+            <div id="popup">
+                <p>Utilisez<br/><span>Ctrl</span> + Scroll pour zoomer</p>
+            </div>
         </div>
         <div class="aside">
+            <p>Retrouvez les informations clés sur les festivals, salons, rencontres, dans tous les domaines culturels et sur tout le territoire.</p>
             <form id="formulaire" action="" method="post">
             <label for="Domaine">Recherche par domaine</label>
                 <select  name="Domaine" id="domaine" >
-                    <option value="tous" selected="selected">Tous</option>
+                    
                 </select>
                 <label for="Domaine">Recherche par département</label>
                 <select name="Département" id="departement">
-                    <option value="tous" selected="selected">Tous</option>
+                    
                 </select>
                 <label for="Domaine">Recherche par mois</label>
                 <select name="Mois" id="mois" >
-                    <option value="tous" selected="selected">Tous</option>
+                    
                 </select>
                 <input class="button" type="submit" value="Valider">
                 <p id="message"></p>
             </form>
         </div>
     </div>
+
+<footer>
+    <div class="container">
+        <p>© 2020 Copyright : ACS Promo CSS - 117</p>  
+        <div class="reseaux">
+            <img src="f_logo.png" alt="icone facebook" class="reseau">  
+        <img src="twit_logo.png" alt="icone twitter" class="reseau"> 
+        
+        </div>
+        
+    </div>
+        
+    </footer>
 	
 </div>{% endblock %}

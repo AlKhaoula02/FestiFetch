@@ -11,16 +11,20 @@ let selectDomaines = document.querySelector("#domaine");
 let selectDepartements = document.querySelector("#departement");
 let selectMois = document.querySelector("#mois");
 let markers = [];
-const message = document.querySelector('#message');
+const message = document.querySelector("#message");
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx AFFICHAGE CARTE XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-var map = L.map("map").setView([46, 2], 6);
+var map = L.map("map", {
+  gestureHandling: true,
+  maxZoom: 15,
+  minZoom: 1
+}).setView([46.7, 2], 6);
 // // création du calque images
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 18
-}).addTo(map);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {}).addTo(
+  map
+);
 
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx FETCH XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -42,31 +46,38 @@ fetch("/curl", {
       newMarker = L.marker([lat, lon])
         .addTo(map)
         .bindPopup(
-          "<strong>" + nom + "</strong>" + "<br/>" + domaine +"<br/>"+ commune +lien
+          "<strong>" +
+            nom +
+            "</strong>" +
+            "<br/>" +
+            domaine +
+            "<br/>" +
+            commune +
+            lien
         );
       markers.push(newMarker);
     }
-    for (let i = 0; i < json.length; i++) {
-      if (
-        json[i].geometry != undefined &&
-        json[i].fields.nom_de_la_manifestation != undefined &&
-        json[i].fields.domaine != undefined &&
-        json[i].fields.commune_principale != undefined &&
-        json[i].fields.mois_habituel_de_debut != undefined
-      ) {
-        lat = json[i].geometry.coordinates[1];
-        lon = json[i].geometry.coordinates[0]; 
-        lien="<p>N'a pas de site</p>";
-        if (json[i].fields.site_web !== undefined) {
-          lien = "<br/><a target='_blank' href='"+ json[i].fields.site_web +"'>"+json[i].fields.site_web+"</a>"
-        }     
-        nom = json[i].fields.nom_de_la_manifestation;
-        domaine = json[i].fields.domaine;
-        mois = json[i].fields.mois_habituel_de_debut;
-       commune = json[i].fields.commune_principale;
-        creerMarker();
-      }
-    }
+    // for (let i = 0; i < json.length; i++) {
+    //   if (
+    //     json[i].geometry != undefined &&
+    //     json[i].fields.nom_de_la_manifestation != undefined &&
+    //     json[i].fields.domaine != undefined &&
+    //     json[i].fields.commune_principale != undefined &&
+    //     json[i].fields.mois_habituel_de_debut != undefined
+    //   ) {
+    //     lat = json[i].geometry.coordinates[1];
+    //     lon = json[i].geometry.coordinates[0];
+    //     lien="<p>N'a pas de site</p>";
+    //     if (json[i].fields.site_web !== undefined) {
+    //       lien = "<br/><a target='_blank' href='"+ json[i].fields.site_web +"'>"+json[i].fields.site_web+"</a>"
+    //     }
+    //     nom = json[i].fields.nom_de_la_manifestation;
+    //     domaine = json[i].fields.domaine;
+    //     mois = json[i].fields.mois_habituel_de_debut;
+    //    commune = json[i].fields.commune_principale;
+    //     creerMarker();
+    //   }
+    // }
 
     function onlyUnique(value, index, self) {
       return self.indexOf(value) === index;
@@ -81,7 +92,7 @@ fetch("/curl", {
       domainesDistincts.forEach(function(element, key) {
         selectDomaines[key + 1] = new Option(element, element, false, false);
       });
-      selectDomaines[0] = new Option("Tous", "Tous", true, true);
+      selectDomaines[0] = new Option("Tous les domaines", "Tous", true, true);
     }
     recupererDomaines();
 
@@ -100,7 +111,12 @@ fetch("/curl", {
           false
         );
       });
-      selectDepartements[0] = new Option("Tous", "Tous", true, true);
+      selectDepartements[0] = new Option(
+        "Sur toute la france",
+        "Tous",
+        true,
+        true
+      );
     }
     recupererDepartements();
 
@@ -114,7 +130,7 @@ fetch("/curl", {
       moisDistincts.forEach(function(element, key) {
         selectMois[key + 1] = new Option(element, element, false, false);
       });
-      selectMois[0] = new Option("Tous", "Tous", true, true);
+      selectMois[0] = new Option("Toute l'année", "Tous", true, true);
     }
     recupererMois();
     const formulaire = document.querySelector("#formulaire");
@@ -129,6 +145,7 @@ fetch("/curl", {
     formulaire.addEventListener("submit", function(e) {
       e.preventDefault();
       cacherMarqueurs();
+      document.querySelector("#popup").classList.add("opaque");
       for (let i = 0; i < json.length; i++) {
         if (
           json[i].geometry != undefined &&
@@ -144,18 +161,23 @@ fetch("/curl", {
           domaine = json[i].fields.domaine;
           commune = json[i].fields.commune_principale;
           mois = json[i].fields.mois_habituel_de_debut;
-          lien="<p>N'a pas de site</p>";
+          lien = "<p>Site non renseigné</p>";
           if (json[i].fields.site_web !== undefined) {
-            lien = "<br/><a target='_blank' href='"+ json[i].fields.site_web +"'>"+json[i].fields.site_web+"</a>"
-          } 
-     
+            lien =
+              "<br/><a target='_blank' href='" +
+              json[i].fields.site_web +
+              "'>" +
+              json[i].fields.site_web +
+              "</a>";
+          }
+
           if (
             domaine == selectDomaines.value &&
             mois == selectMois.value &&
             selectDepartements.value == "Tous"
           ) {
             creerMarker();
-            map.flyTo([46, 2], 6);
+            map.flyTo([46.7, 2], 6);
           } else if (
             departement == selectDepartements.value &&
             mois == selectMois.value &&
@@ -190,34 +212,62 @@ fetch("/curl", {
             selectMois.value == "Tous"
           ) {
             creerMarker();
-            map.flyTo([46, 2], 6);
+            map.flyTo([46.7, 2], 6);
           } else if (
             "Tous" == selectDepartements.value &&
             selectDomaines.value == "Tous" &&
             selectMois.value == mois
           ) {
             creerMarker();
-            map.flyTo([46, 2], 6);
+            map.flyTo([46.7, 2], 6);
           } else if (
             "Tous" == selectDepartements.value &&
             selectDomaines.value == "Tous" &&
             selectMois.value == "Tous"
           ) {
             creerMarker();
-            map.flyTo([46, 2], 6);
+            map.flyTo([46.7, 2], 6);
+          }
+          if (window.innerWidth < 600) {
+            document.querySelector("#message").scrollIntoView({
+              behavior: "smooth"
+            });
           }
         }
       }
       if (markers.length == 0) {
-          message.innerHTML = 'Aucun résultat ne correspond à votre recherche !';
-      }else if (markers.length ==1){
-        message.innerHTML = markers.length + ' résultat correspond à votre recherche';
-      }else if (markers.length >1){
-        message.innerHTML = markers.length + ' résultats correspondent à votre recherche';
+        message.innerHTML = "Aucun résultat ne correspond à votre recherche !";
+      } else if (markers.length == 1) {
+        message.innerHTML =
+          markers.length + " résultat correspond à votre recherche";
+      } else if (markers.length > 1) {
+        message.innerHTML =
+          markers.length + " résultats correspondent à votre recherche";
       }
       //  TESTER ICI LA LONGUEUR DE MARKERS
       //  ICI ON PEUT DIRE A L'UTILISATEUR QU'IL N4Y A AUCUN RESULTAT
       console.log(markers.length);
     });
-    document.querySelector('#loader').classList.add('cache');
+    document.querySelector("#loader").classList.add("cache");
   });
+
+document.addEventListener("keydown", function(e) {
+  if (e.keyCode === 17) {
+    document.querySelector("#popup").classList.add("opaque");
+  }
+});
+
+mybutton = document.querySelector("#fleche");
+window.addEventListener("scroll", function() {
+  if (document.documentElement.scrollTop > 300) {
+    mybutton.style.bottom = "30px";
+  } else {
+    mybutton.style.bottom = "-120px";
+  }
+});
+
+mybutton.addEventListener("click", function() {
+  document.querySelector("#titre").scrollIntoView({
+    behavior: "smooth"
+  });
+})
